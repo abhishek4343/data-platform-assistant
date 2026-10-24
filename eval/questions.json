@@ -1,0 +1,14 @@
+[
+  {"question": "why did the market data job fail?", "doc": "02_incident_api_timeout_proxy.md", "section": "Root cause analysis"},
+  {"question": "how do I force a full reload of a NiFi flow?", "doc": "01_nifi_ingestion_runbook.md", "section": "How incremental loading works"},
+  {"question": "what happens to rows that fail validation?", "doc": "04_data_quality_standards.md", "section": "Quarantine"},
+  {"question": "how quickly must on-call acknowledge an alert at night?", "doc": "06_oncall_and_escalation.md", "section": "On-call rotation"},
+  {"question": "how long should the old and new pipelines run in parallel during an Informatica migration?", "doc": "05_informatica_migration_playbook.md", "section": "Parallel run"},
+  {"question": "COPY INTO says the number of columns in the file does not match, what should I do?", "doc": "01_nifi_ingestion_runbook.md", "section": "Common failures"},
+  {"question": "how do I keep only the latest record for each business key?", "doc": "04_data_quality_standards.md", "section": "De-duplication rule"},
+  {"question": "what counts as a P1 incident?", "doc": "06_oncall_and_escalation.md", "section": "Severity levels"},
+  {"question": "why did postcodes end up containing city names?", "doc": "03_incident_csv_column_spill.md", "section": "Root cause analysis"},
+  {"question": "how often do the NiFi flows run?", "doc": "01_nifi_ingestion_runbook.md", "section": "Architecture overview"},
+  {"question": "what usually causes defects when migrating from Informatica?", "doc": "05_informatica_migration_playbook.md", "section": "Lessons learned"},
+  {"question": "how often should I post updates during a P2 incident?", "doc": "06_oncall_and_escalation.md", "section": "Communication"}
+]

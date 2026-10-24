@@ -1,0 +1,6 @@
+fastembed
+psycopg[binary]
+pgvector
+python-dotenv
+anthropic
+langgraph
