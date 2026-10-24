@@ -42,11 +42,29 @@ A record of what was tried, what failed, and what changed. Each entry: the probl
 
 ## Experiment 3: Cross-encoder reranking
 
-Re-score the top 20 hybrid candidates with `Xenova/ms-marco-MiniLM-L-6-v2` and keep the best 5. Results: run `python eval/retrieval_eval.py`, which prints both set-ups side by side.
+Re-score the top 20 hybrid candidates with `Xenova/ms-marco-MiniLM-L-6-v2` (a small cross-encoder, CPU) and keep the best 5.
+
+| Set-up | hit@1 | hit@5 | MRR |
+|---|---|---|---|
+| hybrid | 58% | 83% | 0.67 |
+| hybrid + rerank | **75%** | **92%** | **0.79** |
+
+| Question | Hybrid | + Rerank |
+|---|---|---|
+| why did the market data job fail? | MISS | 4 |
+| how do I force a full reload of a NiFi flow? | 3 | **1** |
+| what happens to rows that fail validation? | 2 | **1** |
+| what counts as a P1 incident? | MISS | 4 |
+| why did postcodes end up containing city names? | 5 | **MISS (regression)** |
+
+**Regression analysis:** the postcode question got worse. The Detection chunk repeats the question's exact words ("postcodes containing city names"), while the root-cause chunk explains the cause in other words (unquoted text fields). This small reranker, trained on web search queries, still leans on word overlap. A reranker is not a universal fix; the evaluation set is what caught this.
+
+**Next experiment for these "why" questions:** contextual chunks. At ingest, prepend a short document-level context to each chunk (for example the incident summary), so a root-cause chunk also carries the symptoms it explains. A larger reranker (`BAAI/bge-reranker-base`) is a second option, at about 10x the model size.
 
 ## Ideas to try next
 
 1. **Measure first:** an evaluation set (`eval/questions.json`) with hit@1, hit@5 and MRR, so every change is compared on the same questions.
 2. **BM25 keyword scoring:** replace `ts_rank_cd` with a ranking that down-weights common words.
-3. **Smaller chunks:** split long sections by paragraph so each chunk covers one idea.
-4. **Query rewriting:** let the LLM rewrite vague questions into search-friendly terms before retrieval.
+3. **Contextual chunks:** prepend document context to each chunk before embedding (see Experiment 3).
+4. **Smaller chunks:** split long sections by paragraph so each chunk covers one idea.
+5. **Query rewriting:** let the LLM rewrite vague questions into search-friendly terms before retrieval.
