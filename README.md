@@ -31,9 +31,24 @@ python src/ask.py "why did the market data job fail?"    # answer with citations
 python eval/retrieval_eval.py                            # hit@1, hit@5 and MRR on 12 test questions
 python src/seed_runs.py                                  # create synthetic pipeline_runs data (30 days)
 python src/agent.py "Which pipeline failed most last month and what does the runbook say?"
+python tests/test_sql_guardrails.py                      # SQL tool rejects anything but a single SELECT
 ```
 
-What was tried and what changed is logged in [notes/retrieval-experiments.md](notes/retrieval-experiments.md).
+What was tried and what changed is logged in [notes/retrieval-experiments.md](notes/retrieval-experiments.md) and [notes/agent-observations.md](notes/agent-observations.md).
+
+## Demo
+
+```text
+$ python src/agent.py "Which pipeline failed most in the last 30 days, and what does the runbook say about that error?"
+  -> run_sql: SELECT pipeline, COUNT(*) AS failures ... WHERE status = 'failed' ... GROUP BY pipeline ORDER BY failures DESC
+  -> run_sql: SELECT pipeline, run_date, error_message FROM pipeline_runs WHERE status = 'failed' ...
+  -> search_docs: market_data_api_daily runbook HTTP 503 vendor API ReadTimeout
+
+Most failures: market_data_api_daily, with 9 failures ... The ReadTimeouts match incident INC-2041
+(bad proxy port after a release). The runbook does not cover HTTP 503 responses from the vendor ...
+```
+
+The agent picks its tools per question: SQL only for "What is the average duration of trades_nifi runs?", documents only for "What counts as a P1 incident?", and for "Delete all failed runs" it refuses and explains what would be lost. The SQL guardrails are tested separately in `tests/test_sql_guardrails.py`, because a model refusing is not a security control.
 
 ## Roadmap
 
